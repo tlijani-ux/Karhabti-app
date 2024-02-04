@@ -34,20 +34,39 @@ public class WebSecurityConfiguration {
     @Autowired
     private UserService userService;
 
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+//        httpSecurity.csrf(AbstractHttpConfigurer::disable)
+//                .authorizeRequests(request -> request
+//                        .requestMatchers("/api/auth/**").permitAll()
+//                        .requestMatchers("/api/admin/**").hasAnyAuthority(UserRole.ADMIN.name())
+//                        .requestMatchers("/api/user/**").hasAnyAuthority(UserRole.CUSTOMER.name())
+//                        .anyRequest().authenticated())
+//                .sessionManagement(manager ->
+//                        manager.sessionCreationPolicy(STATELESS))
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//        return httpSecurity.build();
+//    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(request -> request
+                        // Allow access to login endpoint without authentication
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasAnyAuthority(UserRole.ADMIN.name())
-                        .requestMatchers("/api/user/**").hasAnyAuthority(UserRole.CUSTOMER.name())
+                        // Admin endpoints require ADMIN authority
+                        .requestMatchers("/api/admin/**").hasAuthority(UserRole.ADMIN.name())
+                        // User endpoints require CUSTOMER authority
+                        .requestMatchers("/api/user/**").hasAuthority(UserRole.CUSTOMER.name())
                         .anyRequest().authenticated())
-                .sessionManagement(manager ->
-                        manager.sessionCreationPolicy(STATELESS))
+                // Disable session creation since you're using stateless JWT
+                .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
+                // Add your JWT authentication filter before UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
+
 
 
     @Bean
