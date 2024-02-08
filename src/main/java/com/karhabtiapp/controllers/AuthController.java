@@ -9,7 +9,6 @@ import com.karhabtiapp.repositories.UserRepository;
 import com.karhabtiapp.services.AuthService;
 import com.karhabtiapp.services.jwt.UserService;
 import com.karhabtiapp.utils.JwtUtil;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,18 +51,17 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<UserDto> createCustomer(@RequestBody SignupRequest signupRequest) {
         if (authService.hasCustomerWithEmail(signupRequest.getEmail())) {
-           return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
         }
-       UserDto createdUserDto = authService.createCustomer(signupRequest);
-       if (createdUserDto == null) {
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-       }
+        UserDto createdUserDto = authService.createCustomer(signupRequest);
+        if (createdUserDto == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUserDto);
     }
 
-        
-        
-        @PostMapping("/login")
+
+    @PostMapping("/login")
     public AuthenticationResponse createdAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest)
             throws BadCredentialsException,
             DisabledException,
@@ -75,8 +73,8 @@ public class AuthController {
         }catch (BadCredentialsException e){
             throw  new BadCredentialsException("incorect username or password");
         }
-            // In your controller method
-            final UserDetails userDetails = userServices.DetailsService().loadUserByUsername(authenticationRequest.getEmail());
+
+        final UserDetails userDetails = userServices.DetailsService().loadUserByUsername(authenticationRequest.getEmail());
         Optional<User> optionalUser = userRepository.findFirstByEmail(userDetails.getUsername());
         String jwt = jwtUtil.generateToken(userDetails);
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();
