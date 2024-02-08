@@ -6,7 +6,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,7 +21,10 @@ public class JwtUtil {
 
     private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    private static final long EXPIRATION_TIME_MS = 1000 * 60 * 24;
+    private static final long ACCESS_TOKEN_EXPIRATION_MS = 1000 * 60 * 60;
+
+    //  (7 days)
+    private static final long REFRESH_TOKEN_EXPIRATION_MS = 1000 * 60 * 60 * 24 * 7;
 
     public String extractUsername(String token) {
         if (token != null) {
@@ -36,7 +38,11 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         LOGGER.info("Generating token for user: " + userDetails.getUsername());
-        return generateToken(new HashMap<>(), userDetails);
+        return generateToken(new HashMap<>(), userDetails, ACCESS_TOKEN_EXPIRATION_MS);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails, REFRESH_TOKEN_EXPIRATION_MS);
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -55,12 +61,12 @@ public class JwtUtil {
         }
     }
 
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long expirationTime) {
         return Jwts.builder().setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_MS))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(SECRET_KEY).compact();
     }
 
     private Boolean isTokenExpired(String token) {

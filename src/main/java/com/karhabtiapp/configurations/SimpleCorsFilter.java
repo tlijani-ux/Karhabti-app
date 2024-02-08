@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.logging.Filter;
 import java.util.logging.LogRecord;
 
+
+
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SimpleCorsFilter implements Filter {
@@ -25,14 +27,16 @@ public class SimpleCorsFilter implements Filter {
         String originHeader= request1.getHeader("origin");
         response1.setHeader("Acces-Control-Allow-Origin", originHeader);
         response1.setHeader("Acces-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE ");
-        response1.setHeader("Acces-Control-Max-Age", "3600");
+        response1.setHeader("Acces-Control-Max-Age", "36000");
         response1.setHeader("Acces-Control-Allow-Headers", "*");
 
         if("OPTIONS".equalsIgnoreCase(request1.getMethod())){
+
             response1.setStatus(HttpServletResponse.SC_OK);
         }else {
             filterChain.doFilter(request,response);
         }
+
     }
 
 

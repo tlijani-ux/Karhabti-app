@@ -3,8 +3,12 @@ package com.karhabtiapp.dtos;
 
 import com.karhabtiapp.enums.UserRole;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
+@Getter
+@Setter
 public class AuthenticationResponse {
 
     private String jwt;
@@ -13,27 +17,6 @@ public class AuthenticationResponse {
 
     private Long userId;
 
-    public String getJwt() {
-        return jwt;
-    }
 
-    public void setJwt(String jwt) {
-        this.jwt = jwt;
-    }
 
-    public UserRole getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(UserRole userRole) {
-        this.userRole = userRole;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 }

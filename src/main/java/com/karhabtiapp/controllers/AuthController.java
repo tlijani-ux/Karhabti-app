@@ -68,7 +68,6 @@ public class AuthController {
             throws BadCredentialsException,
             DisabledException,
             UsernameNotFoundException{
-
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword()));
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -77,22 +76,17 @@ public class AuthController {
             throw  new BadCredentialsException("incorect username or password");
         }
             // In your controller method
-
-
             final UserDetails userDetails = userServices.DetailsService().loadUserByUsername(authenticationRequest.getEmail());
         Optional<User> optionalUser = userRepository.findFirstByEmail(userDetails.getUsername());
-
         String jwt = jwtUtil.generateToken(userDetails);
-
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();
-
         if (optionalUser.isPresent()){
-
             authenticationResponse.setJwt(jwt);
             authenticationResponse.setUserId(optionalUser.get().getId());
             authenticationResponse.setUserRole(optionalUser.get().getUserRole());
         }
         return authenticationResponse;
     }
+
 
 }
