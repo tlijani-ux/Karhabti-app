@@ -3,10 +3,14 @@ package com.karhabtiapp.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import javax.crypto.SecretKey;
+
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,14 +21,15 @@ import java.util.logging.Logger;
 @Component
 public class JwtUtil {
 
-    private static final Logger LOGGER = Logger.getLogger(JwtUtil.class.getName());
+ private static final Logger LOGGER = Logger.getLogger(JwtUtil.class.getName());
 
-    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-
-    private static final long ACCESS_TOKEN_EXPIRATION_MS = 1000 * 60 * 60;
-
-    //  (7 days)
-    private static final long REFRESH_TOKEN_EXPIRATION_MS = 1000 * 60 * 60 * 24 * 7;
+//  private static final String SECRET_KEY = "key1234";
+@Value("${application.security.jwt.secret-key}")
+public String SECRET_KEY ;
+@Value("${application.security.jwt.expiration}")
+private long jwtExpiration;
+@Value("${application.security.jwt.refresh-token.expiration}")
+private long refreshExpiration;
 
     public String extractUsername(String token) {
         if (token != null) {
@@ -38,11 +43,11 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         LOGGER.info("Generating token for user: " + userDetails.getUsername());
-        return generateToken(new HashMap<>(), userDetails, ACCESS_TOKEN_EXPIRATION_MS);
+        return generateToken(new HashMap<>(), userDetails, jwtExpiration);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails, REFRESH_TOKEN_EXPIRATION_MS);
+        return generateToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -50,23 +55,24 @@ public class JwtUtil {
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
         final Claims claims = extractAllClaims(token);
-
-        if (claims != null) {
-            return claimsResolver.apply(claims);
-        } else {
-            LOGGER.log(Level.WARNING, "Claims is null in extractClaim for token: {0}", token);
-            throw new IllegalArgumentException("Claims is null in extractClaim");
-        }
+        return claimsResolvers.apply(claims);
     }
 
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long expirationTime) {
-        return Jwts.builder().setClaims(extraClaims)
+    private String generateToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails,
+            long expirationTime
+    ) {
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(SECRET_KEY).compact();
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -78,19 +84,18 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extractAllClaims(String token) {
-        try {
-            if (token != null) {
-                LOGGER.info("Token: " + token);
-                return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
-            } else {
-                LOGGER.warning("Token is null in extractAllClaims");
-                throw new IllegalArgumentException("Token is null in extractAllClaims");
-            }
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error extracting claims from token: {0}, Error: {1}", new Object[]{token, e.getMessage()});
-            return null;
-        }
+private Claims extractAllClaims(String token) {
+    return Jwts.parserBuilder()
+            .setSigningKey(getSigningKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+
+
+}
+    private Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
