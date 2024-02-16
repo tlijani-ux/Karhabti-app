@@ -1,0 +1,35 @@
+[33mcommit 6fffa580634490305f746dde2b5d41773c79d927[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Seif Tlijani <114825087+tlijani-ux@users.noreply.github.com>
+Date:   Wed Feb 14 22:00:00 2024 +0100
+
+    add config
+
+[33mcommit 44a3b61e19c7dc1e6d076ec58dc82df1f1c5fb5c[m
+Author: Seif Tlijani <114825087+tlijani-ux@users.noreply.github.com>
+Date:   Thu Feb 8 10:04:36 2024 +0100
+
+    conf controllers
+
+[33mcommit d877df4930e4e34fee17c0242b4d7f05e20f4d02[m
+Author: Seif Tlijani <114825087+tlijani-ux@users.noreply.github.com>
+Date:   Thu Feb 8 09:03:45 2024 +0100
+
+    add config
+
+[33mcommit f2c86833e095a2ae4b826de97c2cbffd6904afac[m
+Author: Seif Tlijani <114825087+tlijani-ux@users.noreply.github.com>
+Date:   Mon Feb 5 00:15:11 2024 +0100
+
+    configurations and JwtUtil
+
+[33mcommit d9f8d3ae0f37bfb7c78e7f1d9d07da0e7819f35c[m
+Author: Seif Tlijani <114825087+tlijani-ux@users.noreply.github.com>
+Date:   Sun Feb 4 10:43:24 2024 +0100
+
+    add jwtAuth
+
+[33mcommit 88bd3f89b15dbfddf70ea64765aedd3a93591505[m
+Author: Seif Tlijani <114825087+tlijani-ux@users.noreply.github.com>
+Date:   Sat Feb 3 09:42:06 2024 +0100
+
+    first commit
