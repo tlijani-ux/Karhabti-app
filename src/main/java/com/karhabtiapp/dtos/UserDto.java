@@ -12,7 +12,7 @@ import lombok.Setter;
 public class UserDto {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private Long id;
 
     private String name;

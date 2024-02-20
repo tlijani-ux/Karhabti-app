@@ -11,13 +11,9 @@ import lombok.Setter;
 @Setter
 public class SignupRequest {
 
-    private String email;
-
     private  String name;
-
+    private String email;
     private String password;
-
-
 
 
 }

@@ -21,8 +21,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
-
-
 @RestController
 @RequestMapping("/api/auth")
 @Builder
@@ -31,12 +29,16 @@ public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
     @Autowired
     private JwtUtil jwtUtil;
+
     @Autowired
     private UserService userService;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private AuthService authService;
 
@@ -51,7 +53,6 @@ public class AuthController {
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUserDto);
     }
-
     @PostMapping(value = "/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest authenticationRequest) {
         System.out.println(authenticationRequest.getEmail());

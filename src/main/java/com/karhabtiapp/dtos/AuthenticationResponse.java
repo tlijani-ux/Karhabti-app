@@ -20,12 +20,8 @@ public class AuthenticationResponse {
         this.userId = userId;
     }
 
-
     private String jwt;
-
     private UserRole userRole;
-
-
     public Long userId;
 
 

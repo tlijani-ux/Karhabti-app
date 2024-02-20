@@ -22,6 +22,7 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     @Autowired
     UserService userService;
     @Autowired
@@ -32,7 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NotNull  HttpServletRequest request,
                                     @NotNull  HttpServletResponse response,
                                     @NotNull  FilterChain filterChain) throws ServletException, IOException {
-
         final String authHeader = request.getHeader("Authorization");
         if(authHeader ==  null || !authHeader.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
